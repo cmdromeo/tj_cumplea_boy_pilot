@@ -3,6 +3,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Baloo+2:wght@500;700;800&display=swap">
 <style>
+[hidden]{display:none!important}
 /* Layout: una sola pantalla espacial; tres "planetas" (Salida → Cuenta regresiva → Meta) y un kart cohete que viaja entre ellos con salto a velocidad luz. */
 :root{
   --space:#07061a;
@@ -126,6 +127,51 @@ body.warping #flyer{animation:fly 1.3s cubic-bezier(.5,0,.5,1)}
   body.warping #flyer{animation:none}
   .stage,.planet{transition-duration:.01s}
 }
+
+/* ===== Responsivo ===== */
+main{display:flex;flex-direction:column;align-items:center}
+.stages{display:grid;grid-template-columns:minmax(0,1fr);align-items:center;width:100%;max-width:560px;margin-block:auto}
+.stage{min-width:0}
+.btn{justify-content:center}
+.sound{background:var(--space);color:var(--ink)}
+.stages{position:relative}
+.stage[aria-hidden="true"]:not(.leaving){position:absolute;top:0;left:0;right:0}
+form{grid-template-columns:minmax(0,1fr)}
+input[type=text]{min-width:0;width:100%;box-sizing:border-box}
+.chip{min-width:0}
+.stage > *{max-width:100%;box-sizing:border-box}
+.tag{white-space:normal;text-align:center}
+.count{grid-template-columns:repeat(4,minmax(0,1fr))}
+.ticket{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+@media (max-width:380px){
+  .count{gap:6px}
+  .cell{padding-inline:2px}
+  .cell span{font-size:.62rem;letter-spacing:.06em}
+  .ticket{grid-template-columns:1fr}
+  .ticket div+div{border-left:0;border-top:2px dashed var(--line)}
+  .lead{font-size:1.05rem}
+  nav button{font-size:.75rem}
+  nav .dash{width:18px}
+}
+@media (min-width:900px){
+  .stages{max-width:620px}
+  .lead{font-size:1.25rem}
+}
+/* Pantallas bajas: celular en horizontal */
+@media (max-height:560px){
+  main{padding-block:52px 80px}
+  .stage{gap:10px}
+  h1{font-size:clamp(1.9rem,6vw,2.6rem)}
+  h2{font-size:clamp(1.4rem,5vw,1.9rem)}
+  .lead{font-size:1rem}
+  .cell{padding-block:8px 6px}
+  .cell b{font-size:clamp(1.5rem,5vw,2rem)}
+  nav{padding-block:6px calc(8px + env(safe-area-inset-bottom,0px))}
+  nav button{grid-auto-flow:column;align-items:center}
+  nav .dash{margin-bottom:0}
+}
+@media (max-height:560px){.kart{width:min(200px,40vw,30vh)} .lights i{width:20px;height:20px}}
+@media (max-width:380px){.age{width:2.8rem;height:2.8rem;font-size:1.4rem}}
 </style>
 
 <canvas id="stars" aria-hidden="true"></canvas>
@@ -166,6 +212,7 @@ body.warping #flyer{animation:fly 1.3s cubic-bezier(.5,0,.5,1)}
 </svg>
 
 <main>
+<div class="stages">
   <!-- PLANETA 1: SALIDA -->
   <section class="stage" id="s0" aria-hidden="false">
     <span class="tag">Planeta Salida · Invitación oficial</span>
@@ -233,6 +280,7 @@ body.warping #flyer{animation:fly 1.3s cubic-bezier(.5,0,.5,1)}
       <button class="ghost" id="editBtn" type="button">Cambiar respuesta</button>
     </div>
   </section>
+</div>
 </main>
 
 <nav aria-label="Ruta del viaje">
@@ -341,6 +389,7 @@ function go(n){
   }, reduce ? 50 : 750);
   setTimeout(() => { document.body.classList.remove("warping"); busy = false; }, reduce ? 60 : 1350);
   current = n;
+  $("main").scrollTo({ top: 0, behavior: "smooth" });
   $$("nav button").forEach(b => b.setAttribute("aria-current", +b.dataset.go === n));
 }
 $$("[data-go]").forEach(b => b.addEventListener("click", () => go(b.dataset.go)));
